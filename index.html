@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full" data-theme="minimal">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Decoder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .token-part { word-break: break-all; }
+        #hub-bubble { position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 56px; height: 56px; background-color: #0ea5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; }
+        #hub-bubble:hover { transform: scale(1.1); background-color: #0284c7; }
+    </style>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark') } else { document.documentElement.classList.remove('dark') }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/crusher-ui.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/glass.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/brutal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/neumorph.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/neobrutal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/minimal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/futuristic.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/themes/bento.css">
+    <style id="crusher-tools-framework-bridge">
+        :root { --crusher-style-switcher-top: var(--crusher-spacing-6); --crusher-style-switcher-bg: color-mix(in srgb, var(--crusher-background-surface) 94%, transparent); --crusher-style-switcher-shadow: var(--crusher-shadow-xl); --crusher-style-switcher-icon-shadow: var(--crusher-shadow-md); --crusher-style-switcher-color-gap: var(--crusher-spacing-2); --crusher-style-switcher-color-justify: flex-start; }
+        html[data-mode="dark"] { color-scheme: dark; }
+        body { background: radial-gradient(circle at top left, color-mix(in srgb, var(--crusher-color-brand-primary) 14%, transparent), transparent 28rem), var(--crusher-background-canvas) !important; color: var(--crusher-text-primary) !important; }
+        #theme-toggle { display: none !important; }
+        h1, h2, h3 { color: var(--crusher-text-primary) !important; }
+        p, label, .text-slate-400, .text-slate-500, .text-slate-600, .dark\:text-slate-400, .dark\:text-slate-500 { color: var(--crusher-text-secondary) !important; }
+        .text-sky-400, .text-sky-500, .dark\:text-sky-400, a:not(.tool-card):not(#hub-bubble) { color: var(--crusher-color-brand-primary) !important; }
+        .tool-card, main.bg-white, .bg-white, .bg-slate-50, .bg-slate-100, .dark .dark\:bg-slate-700, .dark .dark\:bg-slate-800 { background-color: var(--crusher-background-surface) !important; border-color: var(--crusher-border-primary) !important; box-shadow: var(--crusher-shadow-lg) !important; }
+        input, textarea, select, .dark .dark\:bg-slate-700:is(input, textarea, select) { background-color: var(--crusher-background-muted) !important; color: var(--crusher-text-primary) !important; border-color: var(--crusher-border-primary) !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--crusher-color-brand-primary) !important; box-shadow: 0 0 0 var(--crusher-focus-width) color-mix(in srgb, var(--crusher-color-brand-primary) 26%, transparent) !important; }
+        button:not(#theme-toggle):not(.style-switcher-toggler):not(.day-night):not(.swatch):not(.dialect-btn), .case-btn { background-color: color-mix(in srgb, var(--crusher-color-brand-primary) 12%, var(--crusher-background-surface)) !important; color: var(--crusher-text-primary) !important; border-color: color-mix(in srgb, var(--crusher-color-brand-primary) 28%, var(--crusher-border-primary)) !important; }
+        button:not(#theme-toggle):not(.style-switcher-toggler):not(.day-night):not(.swatch):not(.dialect-btn):hover, .case-btn:hover, .tool-card:hover { background-color: color-mix(in srgb, var(--crusher-color-brand-primary) 18%, var(--crusher-background-surface)) !important; border-color: var(--crusher-color-brand-primary) !important; }
+        #hub-bubble { background-color: var(--crusher-color-brand-primary) !important; box-shadow: var(--crusher-shadow-lg) !important; }
+        #hub-bubble:hover { background-color: color-mix(in srgb, var(--crusher-color-brand-primary) 82%, black) !important; transform: translateY(-2px) scale(1.03) !important; }
+        crusher-style-switcher { --crusher-style-switcher-width: 15rem; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center min-h-screen p-4 antialiased transition-colors duration-300">
+    <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+        <button id="theme-toggle" type="button" title="Toggle light/dark mode" class="bg-white dark:bg-slate-800 p-3 rounded-full text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors duration-200 shadow-md">
+            <svg id="theme-toggle-sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg id="theme-toggle-moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+    </div>
+    <div class="w-full max-w-2xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white">JWT Decoder</h1>
+            <p class="text-slate-600 dark:text-slate-400 mt-2">Decode JSON Web Tokens without verification.</p>
+        </header>
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl dark:shadow-2xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+            <div><label class="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">JWT Token</label><textarea id="token" rows="4" class="w-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white rounded-md p-3 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500 font-mono text-xs" placeholder="eyJhbGciOiJIb..."></textarea></div>
+            <div class="flex justify-center"><button id="decode-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-full transition-colors duration-200 shadow-md">Decode</button></div>
+            <div id="output" class="space-y-4"></div>
+        </div>
+    </div>
+    <a href="https://tools.muhammadhassaanjaved.com/" id="hub-bubble" title="View All Tools" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></a>
+    <crusher-style-switcher default-theme="minimal"></crusher-style-switcher>
+    <script>
+        (() => { const root = document.documentElement; if (!root.hasAttribute('data-theme')) root.setAttribute('data-theme', 'minimal'); const syncMode = () => { const mode = root.getAttribute('data-mode') || (root.classList.contains('dark') ? 'dark' : 'light'); root.setAttribute('data-mode', mode); root.classList.toggle('dark', mode === 'dark'); try { localStorage.theme = mode; } catch {} }; window.addEventListener('crusher:themechange', syncMode); requestAnimationFrame(syncMode); })();
+    </script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.1/dist/crusher-ui.standalone.esm.js"></script>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun-icon');
+        const moonIcon = document.getElementById('theme-toggle-moon-icon');
+        const updateIcons = () => { if (document.documentElement.classList.contains('dark')) { sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden'); } else { sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden'); } };
+        themeToggleBtn.addEventListener('click', () => { document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'; updateIcons(); });
+        updateIcons();
+        
+        function b64DecodeUnicode(str) {
+            return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        }
+        
+        document.getElementById('decode-btn').addEventListener('click', () => {
+            try {
+                const tok = document.getElementById('token').value.split('.');
+                if(tok.length !== 3) throw new Error('Invalid JWT');
+                
+                const out = document.getElementById('output');
+                out.innerHTML = '';
+                
+                const parts = ['Header', 'Payload'];
+                const colors = ['bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200', 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'];
+                
+                parts.forEach((name, i) => {
+                    const json = JSON.parse(b64DecodeUnicode(tok[i]));
+                    const pre = document.createElement('pre');
+                    pre.className = `${colors[i]} p-4 rounded-lg overflow-x-auto font-mono text-xs`;
+                    pre.innerText = JSON.stringify(json, null, 2);
+                    out.appendChild(pre);
+                });
+                
+            } catch(e) {
+                alert('Invalid Token');
+            }
+        });
+    </script>
+</body>
+</html>
