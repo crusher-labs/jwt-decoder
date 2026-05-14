@@ -12,13 +12,59 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://unpkg.com https://api.web3forms.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/crusher-ui.min.css" integrity="sha384-EIv1tRpD4TjJA0H6sAVfeiJJyJt6DwPxbTYWSsJzylRFMkqMI6xVARApOqqWm5iI" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/themes/minimal.css" integrity="sha384-QYfQeMTJKWZuoEgfBv8ZvJwG12qr6YW8SF6ziK3aHL9luxKjnoswdj/yek7EwpJN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/static/tool-shell.css" integrity="sha384-+mIUnYgeB+0Qf10OjT3tSbT2al2Y8erQfw/uws4os7AxVKNLYeEUW5zHUehGBTVq" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/static/tool-shell.js" integrity="sha384-gNDnPKn5AoF0e4Q555fGbM+snO+UCP3/z4ErG3cyS/Akusg/bzTO+AYmG1WAMnab" crossorigin="anonymous"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+        font-family: 'Inter', sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    /* === Premium polish (2026-05-14) === */
+    body { position: relative; isolation: isolate; }
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0 0 auto 0;
+        block-size: 32rem;
+        background:
+            radial-gradient(ellipse 70% 50% at 50% -5%,
+                color-mix(in srgb, var(--crusher-color-brand-primary) 18%, transparent),
+                transparent 65%);
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.85;
+    }
+    ::selection { background: color-mix(in srgb, var(--crusher-color-brand-primary) 30%, transparent); }
+    .crusher-tool-title {
+        font-family: 'Fraunces', 'Georgia', serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-style: italic;
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+    }
+    .crusher-tool-control:focus-visible {
+        border-color: var(--crusher-color-brand-primary);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--crusher-color-brand-primary) 18%, transparent);
+        outline: none;
+    }
+    .crusher-tool-action {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .crusher-tool-action:hover:not([disabled]) {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--crusher-color-brand-primary) 35%, transparent);
+    }
+    /* End premium polish */
+    body.crusher-tool-page-marker { /* sentinel for re-runs */
+    }
+    /* End sentinel */
         .tool-mono { font-family: 'JetBrains Mono', monospace; }
 
         .tool-stack { display: grid; gap: var(--crusher-spacing-4); max-width: 42rem; margin-inline: auto; }
