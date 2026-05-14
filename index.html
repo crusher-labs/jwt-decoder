@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JWT Decoder</title>
     <link rel="icon" href="data:,">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://unpkg.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://unpkg.com https://api.web3forms.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -55,6 +55,62 @@
             color: var(--crusher-text-secondary);
             margin-bottom: var(--crusher-spacing-2);
         }
+
+        .tool-feedback {
+            width: min(100%, 56rem);
+            margin: var(--crusher-spacing-8) auto var(--crusher-spacing-6);
+            padding-inline: var(--crusher-spacing-4);
+        }
+        .tool-feedback-trigger {
+            cursor: pointer;
+            padding: var(--crusher-spacing-2) var(--crusher-spacing-3);
+            font-size: var(--crusher-font-size-sm);
+            color: var(--crusher-text-secondary);
+            border-radius: var(--crusher-radius-md);
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--crusher-spacing-2);
+            transition: color var(--crusher-motion-duration-fast) var(--crusher-motion-easing-standard);
+        }
+        .tool-feedback-trigger::-webkit-details-marker { display: none; }
+        .tool-feedback-trigger::before {
+            content: '+';
+            display: inline-block;
+            font-weight: 700;
+            color: var(--crusher-color-brand-primary);
+        }
+        .tool-feedback-details[open] .tool-feedback-trigger::before { content: '−'; }
+        .tool-feedback-trigger:hover { color: var(--crusher-color-brand-primary); }
+        .tool-feedback-form {
+            margin-top: var(--crusher-spacing-3);
+            padding: var(--crusher-spacing-4);
+            border: 1px solid var(--crusher-border-primary);
+            border-radius: var(--crusher-radius-lg);
+            background: var(--crusher-background-surface);
+            display: grid;
+            gap: var(--crusher-spacing-3);
+        }
+        .tool-feedback-field { display: grid; gap: var(--crusher-spacing-1); }
+        .tool-feedback-field > span {
+            font-size: var(--crusher-font-size-xs);
+            color: var(--crusher-text-secondary);
+            font-weight: 500;
+        }
+        .tool-feedback-submit {
+            padding-inline: var(--crusher-spacing-4);
+            padding-block: var(--crusher-spacing-2);
+        }
+        .tool-feedback-submit[disabled] { opacity: 0.6; cursor: not-allowed; }
+        .tool-feedback-status {
+            margin: 0;
+            min-block-size: 1.25rem;
+            font-size: var(--crusher-font-size-sm);
+            color: var(--crusher-text-secondary);
+        }
+        .tool-feedback-status[data-kind="ok"] { color: var(--crusher-color-brand-primary); }
+        .tool-feedback-status[data-kind="error"] { color: #dc2626; }
+        .tool-feedback-honey { position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body class="crusher-tool-page">
@@ -146,5 +202,67 @@
             }
         });
     </script>
+
+    <section class="tool-feedback" aria-label="Tool feedback">
+        <details class="tool-feedback-details">
+            <summary class="tool-feedback-trigger">Suggest an improvement</summary>
+            <form id="tool-feedback-form" class="tool-feedback-form" novalidate>
+                <label class="tool-feedback-field">
+                    <span>What could be better?</span>
+                    <textarea name="improvement" rows="3" required maxlength="2000" class="crusher-tool-control" placeholder="Tell me what's missing or what could work better…"></textarea>
+                </label>
+                <label class="tool-feedback-field">
+                    <span>Your email (optional, only if you want a reply)</span>
+                    <input type="email" name="replyto" maxlength="200" class="crusher-tool-control" placeholder="your@email.com">
+                </label>
+                <input type="text" name="botcheck" class="tool-feedback-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <div>
+                    <button type="submit" class="crusher-tool-action tool-feedback-submit">Send</button>
+                </div>
+                <p id="tool-feedback-status" class="tool-feedback-status" role="status" aria-live="polite"></p>
+            </form>
+        </details>
+    </section>
+
+    <script>
+        (function() {
+            const KEY = '30e570c5-aeeb-439d-8a8a-bd2516a5dc5d';
+            const ENDPOINT = 'https://api.web3forms.com/submit';
+            const form = document.getElementById('tool-feedback-form');
+            const status = document.getElementById('tool-feedback-status');
+            if (!form || !status) return;
+            const toolName = (document.title || 'tool').trim();
+            const subject = '[' + toolName + '] Improvement suggestion';
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fd = new FormData(form);
+                fd.set('access_key', KEY);
+                fd.set('subject', subject);
+                fd.set('from_name', toolName);
+                const btn = form.querySelector('button[type="submit"]');
+                const orig = btn.textContent;
+                btn.disabled = true; btn.textContent = 'Sending…';
+                status.textContent = ''; delete status.dataset.kind;
+                try {
+                    const res = await fetch(ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+                    const data = await res.json();
+                    if (data.success) {
+                        form.reset();
+                        status.textContent = 'Thanks — your suggestion is in.';
+                        status.dataset.kind = 'ok';
+                    } else {
+                        status.textContent = data.message || 'Sorry, that did not go through. Try again later?';
+                        status.dataset.kind = 'error';
+                    }
+                } catch (err) {
+                    status.textContent = 'Network error. Try again?';
+                    status.dataset.kind = 'error';
+                } finally {
+                    btn.disabled = false; btn.textContent = orig;
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>
