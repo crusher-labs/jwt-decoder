@@ -12,7 +12,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://unpkg.com https://api.web3forms.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/crusher-ui.min.css" integrity="sha384-EIv1tRpD4TjJA0H6sAVfeiJJyJt6DwPxbTYWSsJzylRFMkqMI6xVARApOqqWm5iI" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/themes/minimal.css" integrity="sha384-QYfQeMTJKWZuoEgfBv8ZvJwG12qr6YW8SF6ziK3aHL9luxKjnoswdj/yek7EwpJN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/crusher-ui-kit@0.1.6/dist/static/tool-shell.css" integrity="sha384-+mIUnYgeB+0Qf10OjT3tSbT2al2Y8erQfw/uws4os7AxVKNLYeEUW5zHUehGBTVq" crossorigin="anonymous">
@@ -43,11 +43,12 @@
     .crusher-tool-title {
         font-family: 'Fraunces', 'Georgia', serif;
         font-optical-sizing: auto;
+        font-variation-settings: 'opsz' 48, 'SOFT' 30;
         font-weight: 500;
-        font-style: italic;
-        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        font-style: normal;
+        font-size: clamp(2rem, 4.5vw, 3rem);
         line-height: 1.05;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.025em;
     }
     .crusher-tool-control:focus-visible {
         border-color: var(--crusher-color-brand-primary);
