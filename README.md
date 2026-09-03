@@ -1,36 +1,24 @@
 # JWT Decoder
 
-A client-only JWT decoder. Paste a JWT, see its header and payload. No server-side decoding, no analytics, no token transmission.
+Decode and inspect a JSON Web Token as a passport: the data page prints alg, jti, holder, issuer, audience, issue, not-before and expiry with local dates and relative times, a machine-readable strip is built from the claims, and the expiry (and not-yet-valid, unsigned) stamps thump down on the facing page with the remaining claims listed under them. Signature verification through Web Crypto: HS256/384/512 with a shared secret, RS/PS/ES with a PEM or JWK public key; a sample token is minted in the browser on load so the verified stamp can be seen. Nothing leaves the browser.
 
 Live: <https://crusher-labs.github.io/jwt-decoder/>
 
+## The world: Passport control
+
+This tool is a **world page** (crusher-labs standard since 2026-09-02): the page is a committed physical object from the tool's own world, with its own CSS, fonts and mode. It does not load `crusher-ui-kit` and has no theme switcher. The brief for this world lives in the workspace atlas (`x:/crusher-labs/docs/context/tools-theme-atlas.md`); change the atlas before changing the world.
+
 ## Privacy
 
-This tool is intentionally **client-only**. The token you paste never leaves your browser.
+This tool runs entirely in your browser. There is no server. No data is uploaded, no telemetry, no analytics. The only network requests fired are the page-load fetches for Google Fonts; your inputs and outputs never leave the tab. The "Suggest an improvement" form posts to Web3Forms only when you submit it.
 
-- The tool's own code (`index.html`) decodes the JWT in JavaScript using `atob()` and `JSON.parse()`. Verified with `grep`: no `fetch`, no `XMLHttpRequest`, no `navigator.sendBeacon`, no `WebSocket`, no `crypto.subtle` calls touch the token.
-- The page does load three sets of external resources via CDN: Google Fonts (Inter), and the `crusher-ui-kit@0.1.6` static assets from jsDelivr. **None of these calls carry the user-pasted token.** They are fired at page load, before any input, and the resource URLs are static.
-- The framework code (`crusher-ui-kit@0.1.6`) is loaded as `crusher-ui.standalone.esm.js`. It manages the theme/mode switcher and persists *only* the user's UI preferences to `localStorage.crusher_prefs` (schema `{ mode, brand, v:1 }`). It does not read the token or make any token-related network call.
-- The tool does **not** persist the token anywhere. After you close the tab, nothing remains.
+## Contract
 
-If you want maximum assurance, take the page offline (`File → Save As`) and open the saved copy. The decoder still works without an internet connection once the page is cached.
-
-## What it does
-
-- Splits a JWT on `.` into header / payload / signature parts.
-- Base64url-decodes the header and payload parts.
-- JSON-parses each and pretty-prints them.
-- Does **not** verify the signature. Use a dedicated server-side library for verification — JWT signature verification on the client is not meaningfully more trustworthy than the token itself.
-
-## Framework / hosting
-
-- Static HTML/CSS/JS deployed via GitHub Pages from this repo's `main` branch.
-- UI chrome is the published `crusher-ui-kit@0.1.6` static contract. See the workspace `CLAUDE.md` for the contract details.
+Validated by `tools-hub/scripts/check-static.mjs` (world-page contract: SEO block, CSP, feedback form, hub link, prose + FAQ, no kit pins). Run `npm run check:static` from `repos/tools-hub` before committing.
 
 ## Development
 
-- Open `index.html` directly in a browser. No build, no dependencies.
-- Or serve the parent workspace via the hub's preview server: `cd ../../tools-hub && npm run preview` then visit `http://127.0.0.1:8723/utility-tools/jwt-decoder/`.
+Open `index.html` directly in a browser. No build, no dependencies. Verify at 1440 and 390 via Playwright `setViewportSize` before shipping.
 
 ## License
 

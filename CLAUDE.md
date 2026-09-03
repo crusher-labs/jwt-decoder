@@ -2,4 +2,4 @@
 
 ## Notes
 
-- Static, frozen, client-only tool. Conventions live in the workspace `AGENTS.md` + the static contract. `crusher-ui-kit` is read-only here (request changes via the workspace `private/framework-feedback.md`).
+- World page (passport control). Conventions: workspace `AGENTS.md`, `docs/design-language.md` (tools section), the atlas. Verify at 1440 and 390 with Playwright `setViewportSize` before shipping.
