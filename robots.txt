@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://crusher-labs.github.io/jwt-decoder/sitemap.xml
